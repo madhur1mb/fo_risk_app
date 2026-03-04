@@ -1,7 +1,8 @@
+import os
 from openai import OpenAI
 
 client = OpenAI(
-  api_key="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"
+  api_key= os.environ.get("OPENAI_API_KEY")
 )
 
 # response = client.responses.create(
