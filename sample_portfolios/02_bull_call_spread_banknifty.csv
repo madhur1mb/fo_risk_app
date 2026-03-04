@@ -1,0 +1,3 @@
+underlying,type,strike,expiry,qty,entry_price
+BANKNIFTY,CE,51000,2026-03-27,3,450
+BANKNIFTY,CE,52000,2026-03-27,-3,180

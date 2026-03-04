@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>F&O Risk Intelligence — RiskPulse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="/static/css/style.css"/>
+</head>
+<body>
+  <!-- ═══════════════════════════════════════════════════ TOP NAV ══ -->
+  <nav class="topnav">
+    <div class="brand">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <div class="brand-name">RiskPulse</div>
+        <div class="brand-sub">F&O Risk Intelligence</div>
+      </div>
+    </div>
+    <div class="market-ticker" id="marketTicker">
+      <div class="ticker-item">
+        <span class="ticker-label">NIFTY</span>
+        <span class="ticker-val" id="t-nifty">—</span>
+      </div>
+      <div class="ticker-item">
+        <span class="ticker-label">BANKNIFTY</span>
+        <span class="ticker-val" id="t-bn">—</span>
+      </div>
+      <div class="ticker-item">
+        <span class="ticker-label">FINNIFTY</span>
+        <span class="ticker-val" id="t-fin">—</span>
+      </div>
+      <div class="ticker-item">
+        <span class="ticker-label">VIX</span>
+        <span class="ticker-val" id="t-vix">—</span>
+      </div>
+    </div>
+    <div class="nav-time" id="navTime">—</div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════════ UPLOAD ZONE ══ -->
+  <div class="upload-zone" id="uploadZone">
+    <div class="upload-card">
+      <div class="upload-icon">📊</div>
+      <h1 class="upload-title">Drop your positions CSV</h1>
+      <p class="upload-hint">underlying, type, strike, expiry, qty, entry_price</p>
+
+      <div class="upload-actions">
+        <label class="btn-primary" for="csvFile">
+          Upload Portfolio CSV
+          <input type="file" id="csvFile" accept=".csv" style="display:none"/>
+        </label>
+        <span class="or-divider">or</span>
+        <div class="sample-dropdown">
+          <button class="btn-ghost" id="sampleBtn">Load Sample Portfolio ▾</button>
+          <div class="sample-menu" id="sampleMenu"></div>
+        </div>
+      </div>
+
+      <div class="csv-preview">
+        <div class="csv-format">
+          <code>underlying,type,strike,expiry,qty,entry_price</code><br/>
+          <code>NIFTY,CE,24000,2026-03-27,-2,310</code><br/>
+          <code>BANKNIFTY,PE,51000,2026-03-27,1,800</code>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ DASHBOARD ══ -->
+  <div class="dashboard hidden" id="dashboard">
+
+    <!-- HEADER BAR -->
+    <div class="dash-header">
+      <div class="dash-title-row">
+        <h2 class="dash-title" id="dashTitle">Portfolio Risk Report</h2>
+        <div class="dash-meta">
+          <span id="posCount">— positions</span>
+          <span class="dot">·</span>
+          <span id="underlyingBadges"></span>
+        </div>
+      </div>
+      <div class="dash-actions">
+        <button class="btn-sm" id="refreshBtn">↻ Refresh</button>
+        <button class="btn-sm" id="stressBtn">⚡ Run Stress</button>
+        <button class="btn-outline-sm" id="newUploadBtn">← New Upload</button>
+      </div>
+    </div>
+
+    <!-- ── ROW 1: GREEKS + FRAGILITY ── -->
+    <div class="grid-row grid-4plus1">
+      <div class="metric-card" id="card-delta">
+        <div class="metric-label">Net Delta</div>
+        <div class="metric-val" id="val-delta">—</div>
+        <div class="metric-sub">Δ per 1pt move</div>
+      </div>
+      <div class="metric-card" id="card-gamma">
+        <div class="metric-label">Net Gamma</div>
+        <div class="metric-val" id="val-gamma">—</div>
+        <div class="metric-sub">Δ change per 1pt</div>
+      </div>
+      <div class="metric-card" id="card-theta">
+        <div class="metric-label">Net Theta</div>
+        <div class="metric-val" id="val-theta">—</div>
+        <div class="metric-sub">Daily time decay</div>
+      </div>
+      <div class="metric-card" id="card-vega">
+        <div class="metric-label">Net Vega</div>
+        <div class="metric-val" id="val-vega">—</div>
+        <div class="metric-sub">Per 1% IV move</div>
+      </div>
+
+      <!-- FRAGILITY GAUGE -->
+      <div class="fragility-card" id="fragilityCard">
+        <div class="frag-label">Fragility Score</div>
+        <div class="frag-gauge-wrap">
+          <canvas id="fragilityGauge" width="160" height="100"></canvas>
+          <div class="frag-score-overlay">
+            <div class="frag-score" id="fragScore">—</div>
+            <div class="frag-state" id="fragState">—</div>
+          </div>
+        </div>
+        <div class="frag-bars" id="fragBars"></div>
+      </div>
+    </div>
+
+    <!-- ── ROW 2: PnL + EXPOSURE ── -->
+    <div class="grid-row grid-4">
+      <div class="metric-card accent-green" id="card-mtm">
+        <div class="metric-label">Daily MTM P&L</div>
+        <div class="metric-val" id="val-mtm">—</div>
+        <div class="metric-sub">vs entry price</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Gross Exposure</div>
+        <div class="metric-val" id="val-gross">—</div>
+        <div class="metric-sub">Total notional</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Net Exposure</div>
+        <div class="metric-val" id="val-net">—</div>
+        <div class="metric-sub">Net directional</div>
+      </div>
+      <div class="metric-card" id="card-margin">
+        <div class="metric-label">Est. Margin</div>
+        <div class="metric-val" id="val-margin">—</div>
+        <div class="metric-sub" id="val-margin-pct">% of capital</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" id="marginBar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ROW 3: CHARTS (Payoff + OI + Vol Smile) ── -->
+    <div class="grid-row grid-3-charts">
+      <!-- Payoff Diagram -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-title">Payoff Diagram</span>
+          <div class="chart-legend">
+            <span class="legend-dot expiry"></span> At Expiry
+            <span class="legend-dot current"></span> Current
+          </div>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="payoffChart"></canvas></div>
+      </div>
+
+      <!-- OI Heatmap -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-title">OI Heatmap</span>
+          <select class="chart-select" id="oiUnderlying"></select>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="oiChart"></canvas></div>
+      </div>
+
+      <!-- Volatility Smile -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-title">Volatility Smile</span>
+          <select class="chart-select" id="smileUnderlying"></select>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="smileChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ── ROW 4: IV INTELLIGENCE ── -->
+    <div class="section-header">
+      <span>Volatility Intelligence</span>
+    </div>
+    <div class="iv-grid" id="ivGrid"></div>
+
+    <!-- ── ROW 5: STRESS TEST ── -->
+    <div class="section-header">
+      <span>Stress Test Results</span>
+      <button class="btn-sm" id="runStressBtn">Run Scenarios</button>
+    </div>
+    <div class="stress-grid" id="stressGrid">
+      <div class="stress-placeholder">Click "Run Scenarios" to simulate shocks</div>
+    </div>
+
+    <!-- CUSTOM STRESS FORM -->
+    <div class="custom-stress-form">
+      <div class="csf-title">Custom Scenario</div>
+      <div class="csf-inputs">
+        <label>Spot Shock %
+          <input type="number" id="cs-spot" step="0.5" value="0" min="-15" max="15"/>
+        </label>
+        <label>IV Shock (vol pts)
+          <input type="number" id="cs-vol" step="1" value="0" min="-20" max="50"/>
+        </label>
+        <label>Days Decay
+          <input type="number" id="cs-days" step="1" value="0" min="0" max="30"/>
+        </label>
+        <button class="btn-primary" id="runCustomBtn">Simulate</button>
+      </div>
+      <div class="csf-result hidden" id="csfResult"></div>
+    </div>
+
+    <!-- ── ROW 6: POSITIONS TABLE ── -->
+    <div class="section-header"><span>Position Details</span></div>
+    <div class="table-wrap">
+      <table class="pos-table" id="posTable">
+        <thead>
+          <tr>
+            <th>Underlying</th>
+            <th>Type</th>
+            <th>Strike</th>
+            <th>Expiry</th>
+            <th>Qty</th>
+            <th>Entry</th>
+            <th>Fair Value</th>
+            <th>MTM P&L</th>
+            <th>Delta</th>
+            <th>Gamma</th>
+            <th>Theta</th>
+            <th>Vega</th>
+            <th>IV %</th>
+            <th>PoP %</th>
+            <th>B/E</th>
+          </tr>
+        </thead>
+        <tbody id="posTableBody"></tbody>
+      </table>
+    </div>
+
+  </div><!-- /dashboard -->
+
+  <!-- Loading overlay -->
+  <div class="loading-overlay hidden" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Computing risk metrics…</div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast hidden" id="toast"></div>
+
+  <!-- ═══════════════════════════════════════════════ AI RISK MODAL ══ -->
+  <div class="ai-modal-overlay hidden" id="aiModal" aria-hidden="true">
+    <div class="ai-modal" role="dialog" aria-modal="true" aria-labelledby="aiModalTitle">
+      <button class="ai-modal-close" id="aiModalClose" aria-label="Close AI risk analysis">×</button>
+      <header class="ai-modal-header">
+        <h3 class="ai-modal-title" id="aiModalTitle">⚡ AI Risk Analysis</h3>
+        <p class="ai-modal-subtitle">GPT-4o · Powered by OpenAI</p>
+      </header>
+      <main class="ai-modal-body" id="aiModalBody">
+        <div class="ai-modal-initial" id="aiModalInitial">
+          <p class="ai-modal-prompt">Want an AI-generated risk summary for this portfolio?</p>
+          <p class="ai-modal-note">We’ll send the computed risk report (no personal data) to GPT-4o and return a concise desk-style briefing.</p>
+        </div>
+        <div class="ai-modal-loading hidden" id="aiModalLoading">
+          <div class="ai-modal-spinner"></div>
+          <div class="ai-modal-loading-text">Analyzing your portfolio…</div>
+        </div>
+        <div class="ai-modal-result hidden">
+          <div class="ai-modal-summary" id="aiModalSummary"></div>
+        </div>
+        <div class="ai-modal-error hidden" id="aiModalError"></div>
+      </main>
+      <footer class="ai-modal-footer">
+        <button class="btn-primary ai-modal-generate" id="aiModalGenerateBtn">Generate Summary</button>
+        <button class="btn-outline-sm ai-modal-skip" id="aiModalSkipBtn">Skip</button>
+        <p class="ai-modal-disclaimer">AI-generated summary. Not financial advice.</p>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Floating AI Summary button in dashboard header -->
+  <button class="btn-sm ai-summary-floating hidden" id="aiSummaryFloatingBtn">📋 AI Summary</button>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
