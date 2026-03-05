@@ -19,6 +19,7 @@
   --text-primary:   #e8edf5;
   --text-secondary: #7a8fa6;
   --text-muted:     #3d5166;
+  --text-dark:      #d3dce5;
 
   --green:  #00e676;
   --green2: #00c853;
@@ -38,7 +39,7 @@
 
 /* ─── Reset ─────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 14px; }
+html { font-size: 16px; }
 
 body {
   font-family: var(--font-mono);
@@ -82,12 +83,12 @@ body {
   overflow-x: auto; scrollbar-width: none;
 }
 .ticker-item { display: flex; align-items: center; gap: 0.4rem; white-space: nowrap; }
-.ticker-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.ticker-label { font-size: 0.65rem; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.08em; }
 .ticker-val   { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
 .ticker-val.up   { color: var(--green); }
 .ticker-val.down { color: var(--red); }
 
-.nav-time { font-size: 0.7rem; color: var(--text-muted); flex-shrink: 0; }
+.nav-time { font-size: 0.7rem; color: var(--text-dark); flex-shrink: 0; }
 
 /* ─── Upload Zone ────────────────────────────────────────── */
 .upload-zone {
@@ -138,7 +139,7 @@ body {
 }
 .btn-primary:hover { background: var(--green); box-shadow: 0 0 20px rgba(0,230,118,0.4); }
 
-.or-divider { color: var(--text-muted); font-size: 0.7rem; }
+.or-divider { color: var(--text-dark); font-size: 0.7rem; }
 
 .sample-dropdown { position: relative; }
 .btn-ghost {
@@ -178,8 +179,8 @@ body {
   border-radius: var(--radius);
   padding: 1rem;
   text-align: left;
-  font-size: 0.72rem;
-  color: var(--text-muted);
+  font-size: 1rem;
+  color: var(--text-dark);
   line-height: 1.8;
 }
 
@@ -204,7 +205,7 @@ body {
   font-size: 1.4rem; font-weight: 700;
   color: var(--text-primary);
 }
-.dash-meta { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.2rem; font-size: 0.72rem; color: var(--text-muted); }
+.dash-meta { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.2rem; font-size: 1rem; color: var(--text-dark); }
 .dot { color: var(--border); }
 .underlying-badge {
   background: var(--bg-card2);
@@ -253,8 +254,36 @@ body {
   .grid-4      { grid-template-columns: repeat(2, 1fr); }
   .grid-3-charts { grid-template-columns: 1fr; }
 }
-@media (max-width: 640px) {
-  .grid-4plus1, .grid-4 { grid-template-columns: 1fr 1fr; }
+@media (max-width: 768px) {
+  /* Other grid rows stack vertically on mobile */
+  .grid-4,
+  .grid-3-charts {
+    grid-template-columns: 1fr;
+  }
+  .dashboard {
+    padding: 1rem;
+  }
+  .dash-header {
+    align-items: stretch;
+  }
+  .dash-actions {
+    width: 100%;
+    justify-content: stretch;
+    flex-direction: column;
+  }
+  .dash-actions .btn-sm,
+  .dash-actions .btn-outline-sm {
+    width: 100%;
+    text-align: center;
+    padding: 0.6rem 1rem;
+  }
+  .custom-stress-form {
+    padding: 0.9rem 0.9rem;
+  }
+  .csf-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 /* ─── Metric Cards ───────────────────────────────────────── */
@@ -274,9 +303,15 @@ body {
 }
 .metric-card:hover { border-color: var(--border-glow); }
 
-.metric-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.4rem; }
+.metric-label {
+  font-size: 1rem;
+  color: var(--text-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.4rem;
+}
 .metric-val   { font-size: 1.6rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1; }
-.metric-sub   { font-size: 0.62rem; color: var(--text-muted); margin-top: 0.3rem; }
+.metric-sub   { font-size: 1rem; color: var(--text-dark); margin-top: 0.3rem; }
 
 .metric-val.positive { color: var(--green); }
 .metric-val.negative { color: var(--red); }
@@ -312,7 +347,7 @@ body {
   flex-direction: column;
   align-items: center;
 }
-.frag-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+.frag-label { font-size: 1rem; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
 .frag-gauge-wrap { position: relative; display: inline-block; }
 .frag-score-overlay {
   position: absolute;
@@ -328,14 +363,26 @@ body {
   display: flex; align-items: center; gap: 0.4rem;
   margin-bottom: 0.25rem;
 }
-.frag-bar-label { font-size: 0.6rem; color: var(--text-muted); width: 70px; flex-shrink: 0; }
+.frag-bar-label { font-size: 1rem; color: var(--text-dark); width: 70px; flex-shrink: 0; }
 .frag-bar-track {
   flex: 1; height: 4px;
   background: var(--bg-void);
   border-radius: 2px; overflow: hidden;
 }
 .frag-bar-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
-.frag-bar-val { font-size: 0.6rem; color: var(--text-muted); width: 28px; text-align: right; }
+.frag-bar-val { font-size: 1rem; color: var(--text-dark); width: 28px; text-align: right; }
+
+@media (max-width: 768px) {
+  /* First metrics row: 2 columns on mobile */
+  .grid-row.grid-4plus1 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  /* Fragility card spans full width on its own row */
+  .grid-row.grid-4plus1 .fragility-card {
+    grid-column: 1 / -1;
+  }
+}
 
 /* ─── Chart Cards ────────────────────────────────────────── */
 .chart-card {
@@ -361,7 +408,7 @@ body {
   margin-bottom: 0.8rem;
 }
 .chart-title { font-family: var(--font-ui); font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
-.chart-legend { display: flex; align-items: center; gap: 0.5rem; font-size: 0.62rem; color: var(--text-muted); }
+.chart-legend { display: flex; align-items: center; gap: 0.5rem; font-size: 1rem; color: var(--text-dark); }
 .legend-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 .legend-dot.expiry  { background: var(--green); }
 .legend-dot.current { background: var(--cyan); }
@@ -385,11 +432,11 @@ body {
   justify-content: space-between;
   margin: 1.5rem 0 0.8rem;
   font-family: var(--font-ui);
-  font-size: 0.75rem;
+  font-size: 1rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--text-muted);
+  color: var(--text-dark);
   border-bottom: 1px solid var(--border);
   padding-bottom: 0.4rem;
 }
@@ -416,7 +463,7 @@ body {
 
 .iv-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; }
 .iv-metric { }
-.iv-metric-label { font-size: 0.58rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.iv-metric-label { font-size: 1rem; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.06em; }
 .iv-metric-val   { font-size: 0.9rem; font-weight: 600; }
 
 .iv-rank-bar {
@@ -446,8 +493,8 @@ body {
 .stress-placeholder {
   grid-column: 1/-1;
   text-align: center;
-  color: var(--text-muted);
-  font-size: 0.75rem;
+  color: var(--text-dark);
+  font-size: 1rem;
   padding: 2rem;
   border: 1px dashed var(--border);
   border-radius: var(--radius);
@@ -460,7 +507,7 @@ body {
   transition: var(--transition);
 }
 .stress-card:hover { border-color: var(--border-glow); }
-.stress-name { font-size: 0.65rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.stress-name { font-size: 1rem; color: var(--text-dark); margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.06em; }
 .stress-pnl  { font-size: 1.1rem; font-weight: 700; }
 .stress-pnl.pos { color: var(--green); }
 .stress-pnl.neg { color: var(--red); }
@@ -474,7 +521,7 @@ body {
   padding: 1rem 1.2rem;
   margin-bottom: 1.5rem;
 }
-.csf-title { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.8rem; }
+.csf-title { font-size: 1rem; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.8rem; }
 .csf-inputs { display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; }
 .csf-inputs label {
   display: flex; flex-direction: column; gap: 0.3rem;
@@ -519,7 +566,7 @@ body {
 .pos-table th {
   padding: 0.6rem 0.8rem;
   text-align: right;
-  color: var(--text-muted);
+  color: var(--text-dark);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-size: 0.6rem;
@@ -647,8 +694,8 @@ body {
 
 .ai-modal-subtitle {
   margin-top: 0.15rem;
-  font-size: 0.7rem;
-  color: var(--text-muted);
+  font-size: 1rem;
+  color: var(--text-dark);
 }
 
 .ai-modal-close {
@@ -772,8 +819,8 @@ body {
 
 .ai-modal-disclaimer {
   margin-left: auto;
-  font-size: 0.65rem;
-  color: var(--text-muted);
+  font-size: 1rem;
+  color: var(--text-dark);
 }
 
 .ai-summary-floating {

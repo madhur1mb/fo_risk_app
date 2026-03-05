@@ -808,8 +808,7 @@ function showAIPromptModal() {
     const parsed = parseMarkdown(aiSummaryCache);
     const target = $("aiModalSummary");
     if (target) {
-      target.innerHTML = "";
-      typewriterRender(target, parsed);
+      target.innerHTML = parsed;
     }
   }
 }
@@ -865,8 +864,7 @@ async function requestAISummary(report) {
     aiSummaryCache = data.summary;
     if (summaryEl && resultWrap) {
       const html = parseMarkdown(data.summary);
-      summaryEl.innerHTML = "";
-      typewriterRender(summaryEl, html);
+      summaryEl.innerHTML = html;
       resultWrap.classList.remove("hidden");
     }
   } catch (e) {
