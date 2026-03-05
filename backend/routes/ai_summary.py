@@ -230,12 +230,12 @@ def _build_prompt(report: Dict[str, Any]) -> str:
 
         Provide a concise professional risk summary in 4 sections:
 
-        1. Portfolio Overview
+        1. Portfolio Overview (in simple terms, not just writing the positions)
         2. Key Risk Flags (2–3 most important)
-        3. Stress Sensitivity
-        4. Trader's Edge Assessment
+        3. Stress Sensitivity (in simple terms, not just writing the scenarios)
+        4. Trader's Edge Assessment (in simple terms, not just writing the technical assessment)
 
-        Tone: direct, risk-desk briefing style.
+        Tone: direct, but expalining the risk in a way that is easy to understand and not too technical.
         Max 500 words.
 
         --- PORTFOLIO DATA ---
